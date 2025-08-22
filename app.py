@@ -6,42 +6,12 @@ import tensorflow as tf
 from ultralytics import YOLO
 
 # ====================
-# CSS Styling dengan jalur file dari GitHub
+# CSS Styling (background warna)
 # ====================
 st.markdown("""
     <style>
         .main {
             background-color: #f9fafb;
-        }
-
-        /* Daun kiri atas */
-        body::before {
-            content: "";
-            position: absolute;
-            top: -30px;
-            left: -50px;
-            width: 250px;
-            height: 250px;
-            /* Gunakan jalur relatif ke folder 'images' di GitHub */
-            background: url("images/leaf-top.png") no-repeat;
-            background-size: contain;
-            transform: rotate(20deg);
-            z-index: -1;
-        }
-
-        /* Daun kanan bawah */
-        body::after {
-            content: "images/bg_streamlit.jpg";
-            position: absolute;
-            bottom: -30px;
-            right: -50px;
-            width: 250px;
-            height: 250px;
-            /* Gunakan jalur relatif ke folder 'images' di GitHub */
-            background: url("images/leaf-bottom.png") no-repeat;
-            background-size: contain;
-            transform: rotate(-15deg);
-            z-index: -1;
         }
 
         .center {
@@ -104,7 +74,7 @@ if st.session_state.page == "home":
 elif st.session_state.page == "deteksi":
 
     st.title("Perbandingan Deteksi Penyakit Soybean Rust (CNN vs YOLO) 🌱")
-    st.write("Unggah satu gambar daun kedelai untuk melihat hasil deteksi dari kedua model secara bersamaan.")
+    st.write("Unggah satu gambar daun kedelai, lalu tekan tombol **Cek Tanamanmu** untuk melihat hasil deteksi.")
 
     @st.cache_resource
     def load_cnn_model():
@@ -144,47 +114,45 @@ elif st.session_state.page == "deteksi":
     if uploaded_file is not None:
         image = Image.open(uploaded_file).convert("RGB")
         st.image(image, caption="Gambar yang diunggah", use_column_width=True)
-        st.write("---")
 
-        col1, col2 = st.columns(2)
+        # Tombol cek tanaman
+        if st.button("🔍 Cek Tanamanmu"):
+            st.write("---")
+            col1, col2 = st.columns(2)
 
-        # ==== CNN ====
-        with col1:
-            st.header("Hasil Analisis CNN")
-            try:
-                img_resized = image.resize((224, 224))
-                img_array = np.expand_dims(np.array(img_resized) / 255.0, axis=0)
+            # ==== CNN ====
+            with col1:
+                st.header("Hasil Analisis CNN")
+                try:
+                    img_resized = image.resize((224, 224))
+                    img_array = np.expand_dims(np.array(img_resized) / 255.0, axis=0)
 
-                prediction = cnn_model.predict(img_array)
-                class_id = np.argmax(prediction)
-                confidence = np.max(prediction)
-                
-                class_names = ["Daun Sehat", "Soybean Rust"]
-                predicted_class_name = class_names[class_id]
+                    prediction = cnn_model.predict(img_array)
+                    class_id = np.argmax(prediction)
+                    confidence = np.max(prediction)
+                    
+                    class_names = ["Daun Sehat", "Soybean Rust"]
+                    predicted_class_name = class_names[class_id]
 
-                st.write(f"### Prediksi: **{predicted_class_name}**")
-                st.write(f"Confidence: **{confidence:.2f}**")
-            except Exception as e:
-                st.error(f"Terjadi kesalahan pada model CNN: {e}")
+                    st.write(f"### Prediksi: **{predicted_class_name}**")
+                    st.write(f"Confidence: **{confidence:.2f}**")
+                except Exception as e:
+                    st.error(f"Terjadi kesalahan pada model CNN: {e}")
 
-        # ==== YOLOv8 ====
-        with col2:
-            st.header("Hasil Analisis YOLOv8")
-            try:
-                results = yolo_model(image)
-                results_img = results[0].plot()
-                st.image(results_img, caption="Hasil Deteksi YOLOv8", use_column_width=True)
+            # ==== YOLOv8 ====
+            with col2:
+                st.header("Hasil Analisis YOLOv8")
+                try:
+                    results = yolo_model(image)
+                    results_img = results[0].plot()
+                    st.image(results_img, caption="Hasil Deteksi YOLOv8", use_column_width=True)
 
-                if len(results[0].boxes) > 0:
-                    st.write("#### Detail Deteksi:")
-                    for box in results[0].boxes:
-                        conf = float(box.conf[0])
-                        st.write(f"- Ditemukan **Penyakit Soybean Rust** dengan confidence **{conf:.2f}**")
-                else:
-                    st.write("Tidak ditemukan penyakit Soybean Rust.")
-            except Exception as e:
-                st.error(f"Terjadi kesalahan pada model YOLOv8: {e}")
-
-    if st.button("⬅️ Kembali ke Beranda"):
-        st.session_state.page = "home"
-        st.experimental_rerun()
+                    if len(results[0].boxes) > 0:
+                        st.write("#### Detail Deteksi:")
+                        for box in results[0].boxes:
+                            conf = float(box.conf[0])
+                            st.write(f"- Ditemukan **Penyakit Soybean Rust** dengan confidence **{conf:.2f}**")
+                    else:
+                        st.write("Tidak ditemukan penyakit Soybean Rust.")
+                except Exception as e:
+                    st.er
