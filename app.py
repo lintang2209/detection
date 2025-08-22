@@ -6,7 +6,7 @@ import tensorflow as tf
 from ultralytics import YOLO
 
 # ====================
-# CSS Styling dengan URL daun online
+# CSS Styling dengan jalur file dari GitHub
 # ====================
 st.markdown("""
     <style>
@@ -22,7 +22,8 @@ st.markdown("""
             left: -50px;
             width: 250px;
             height: 250px;
-            background: url("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.piqsels.com%2Fid%2Fpublic-domain-photo-siimx&psig=AOvVaw3RhuCGbjSlLn9fGVkNReX6&ust=1755967082523000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCMif0IDtno8DFQAAAAAdAAAAABAE") no-repeat;
+            /* Gunakan jalur relatif ke folder 'images' di GitHub */
+            background: url("images/leaf-top.png") no-repeat;
             background-size: contain;
             transform: rotate(20deg);
             z-index: -1;
@@ -30,13 +31,14 @@ st.markdown("""
 
         /* Daun kanan bawah */
         body::after {
-            content: "";
+            content: "images/bg_streamlit.jpg";
             position: absolute;
             bottom: -30px;
             right: -50px;
             width: 250px;
             height: 250px;
-            background: url("https://i.ibb.co/Z2ShYDC/leaf-bottom.png") no-repeat;
+            /* Gunakan jalur relatif ke folder 'images' di GitHub */
+            background: url("images/leaf-bottom.png") no-repeat;
             background-size: contain;
             transform: rotate(-15deg);
             z-index: -1;
